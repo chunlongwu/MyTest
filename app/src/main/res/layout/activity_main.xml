@@ -8,9 +8,5 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="真是坑爹的一天"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="你妹妹啊！"/>
 </LinearLayout>
