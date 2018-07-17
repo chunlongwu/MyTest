@@ -1,8 +1,41 @@
 apply plugin: 'com.android.application'
 
+//获取时间戳
+static def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMddHHmm')
+    return formattedDate
+}
+
+ext.appVersionCode = 1
+ext.appVersionName = "1.0.0"
+ext.appDebugDir = ""
+ext.appReleaseDir = ""
+
+def loadProperties() {
+    def proFile = file("../local.properties")
+    Properties p = new Properties()
+    proFile.withInputStream { stream ->
+        p.load(stream)
+    }
+    appDebugDir = p.appDebugDir
+    appReleaseDir = p.appReleaseDir
+}
+
+loadProperties()
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.3"
+
+    signingConfigs {
+        config {
+            keyAlias 'key_one'
+            keyPassword '123456'
+            storeFile file('../test_one_key.jks')
+            storePassword '123456'
+        }
+    }
 
     defaultConfig {
         applicationId "com.example.wuchunlong.test"
@@ -15,8 +48,36 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            zipAlignEnabled true
         }
     }
+
+    //修改生成的apk名字
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+
+            if (outputFile.name.contains("debug")) {
+                variant.getPackageApplication().outputDirectory = new File(appDebugDir + '/' + getDate())
+            } else if (outputFile.name.contains("release")) {
+                variant.getPackageApplication().outputDirectory = new File(appReleaseDir + '/' + getDate())
+            }
+
+            def newApkName = ""
+            if (variant.buildType.name.equals('release')) {
+                // APK输出文件名
+                newApkName = "AgreementPay_Android_Release.apk"
+            } else if (variant.buildType.name.equals('debug')) {
+                // APK输出文件名
+                newApkName = "AgreementPay_Android_Debug.apk"
+            }
+
+            variant.getPackageApplication().outputScope.apkDatas.forEach {
+                apkData -> apkData.outputFileName = newApkName
+            }
+        }
+    }
+
 }
 
 dependencies {
