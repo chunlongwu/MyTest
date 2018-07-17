@@ -7,22 +7,9 @@ static def getDate() {
     return formattedDate
 }
 
-ext.appVersionCode = 1
-ext.appVersionName = "1.0.0"
-ext.appDebugDir = ""
-ext.appReleaseDir = ""
-
-def loadProperties() {
-    def proFile = file("../local.properties")
-    Properties p = new Properties()
-    proFile.withInputStream { stream ->
-        p.load(stream)
-    }
-    appDebugDir = p.appDebugDir
-    appReleaseDir = p.appReleaseDir
-}
-
-loadProperties()
+// 打包的输出路径（绝对路径）
+ext.appDebugDir = "D:\\jenkins_output_apk\\debug"
+ext.appReleaseDir = "D:\\jenkins_output_apk\\release"
 
 android {
     compileSdkVersion 26
